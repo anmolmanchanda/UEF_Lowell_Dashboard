@@ -1,0 +1,121 @@
+[
+  {
+    "id": "downtown",
+    "name": "Downtown",
+    "lat": 42.637,
+    "lon": -71.311,
+    "metrics": {
+      "median_rent": 1650,
+      "housing_cost_burden": 44,
+      "commute_time": 26,
+      "extreme_heat_days": 10,
+      "air_quality_index": 54,
+      "unemployment_rate": 5.2,
+      "income_inequality": 0.46,
+      "response_time_311": 4.0,
+      "green_space_access": 4.2
+    }
+  },
+  {
+    "id": "highlands",
+    "name": "Highlands",
+    "lat": 42.63,
+    "lon": -71.336,
+    "metrics": {
+      "median_rent": 1500,
+      "housing_cost_burden": 38,
+      "commute_time": 27,
+      "extreme_heat_days": 9,
+      "air_quality_index": 52,
+      "unemployment_rate": 4.6,
+      "income_inequality": 0.42,
+      "response_time_311": 4.4,
+      "green_space_access": 6.8
+    }
+  },
+  {
+    "id": "pawtucketville",
+    "name": "Pawtucketville",
+    "lat": 42.656,
+    "lon": -71.319,
+    "metrics": {
+      "median_rent": 1450,
+      "housing_cost_burden": 34,
+      "commute_time": 25,
+      "extreme_heat_days": 8,
+      "air_quality_index": 50,
+      "unemployment_rate": 4.3,
+      "income_inequality": 0.4,
+      "response_time_311": 4.6,
+      "green_space_access": 7.5
+    }
+  },
+  {
+    "id": "centralville",
+    "name": "Centralville",
+    "lat": 42.65,
+    "lon": -71.299,
+    "metrics": {
+      "median_rent": 1550,
+      "housing_cost_burden": 41,
+      "commute_time": 28,
+      "extreme_heat_days": 11,
+      "air_quality_index": 56,
+      "unemployment_rate": 5.5,
+      "income_inequality": 0.47,
+      "response_time_311": 4.8,
+      "green_space_access": 5.1
+    }
+  },
+  {
+    "id": "belvidere",
+    "name": "Belvidere",
+    "lat": 42.624,
+    "lon": -71.324,
+    "metrics": {
+      "median_rent": 1700,
+      "housing_cost_burden": 36,
+      "commute_time": 29,
+      "extreme_heat_days": 8,
+      "air_quality_index": 51,
+      "unemployment_rate": 4.0,
+      "income_inequality": 0.39,
+      "response_time_311": 3.8,
+      "green_space_access": 8.2
+    }
+  },
+  {
+    "id": "south_lowell",
+    "name": "South Lowell",
+    "lat": 42.62,
+    "lon": -71.321,
+    "metrics": {
+      "median_rent": 1480,
+      "housing_cost_burden": 39,
+      "commute_time": 27.5,
+      "extreme_heat_days": 9,
+      "air_quality_index": 53,
+      "unemployment_rate": 5.0,
+      "income_inequality": 0.44,
+      "response_time_311": 4.7,
+      "green_space_access": 5.8
+    }
+  },
+  {
+    "id": "the_acre",
+    "name": "The Acre",
+    "lat": 42.64,
+    "lon": -71.319,
+    "metrics": {
+      "median_rent": 1420,
+      "housing_cost_burden": 46,
+      "commute_time": 26.5,
+      "extreme_heat_days": 10,
+      "air_quality_index": 57,
+      "unemployment_rate": 5.9,
+      "income_inequality": 0.48,
+      "response_time_311": 5.2,
+      "green_space_access": 4.0
+    }
+  }
+]

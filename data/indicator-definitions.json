@@ -1,0 +1,178 @@
+[
+  {
+    "id": "median_rent",
+    "label": "Median Rent",
+    "pillar": "Housing",
+    "unit": "USD/month",
+    "format": "currency",
+    "description": "Median gross rent for occupied units.",
+    "dataSourceIds": ["census_acs"],
+    "updateFrequency": "Annual",
+    "thresholds": { "direction": "down", "good": 1400, "warn": 1700, "alert": 2000 }
+  },
+  {
+    "id": "housing_cost_burden",
+    "label": "Cost-Burdened Households",
+    "pillar": "Housing",
+    "unit": "%",
+    "format": "percent",
+    "description": "Share of households spending more than 30% of income on housing.",
+    "dataSourceIds": ["census_acs"],
+    "updateFrequency": "Annual",
+    "thresholds": { "direction": "down", "good": 30, "warn": 40, "alert": 50 }
+  },
+  {
+    "id": "vacancy_rate",
+    "label": "Rental Vacancy Rate",
+    "pillar": "Housing",
+    "unit": "%",
+    "format": "percent",
+    "description": "Percentage of rental units currently vacant.",
+    "dataSourceIds": ["census_acs"],
+    "updateFrequency": "Annual",
+    "thresholds": { "direction": "down", "good": 4, "warn": 7, "alert": 10 }
+  },
+  {
+    "id": "permits_issued",
+    "label": "Building Permits Issued",
+    "pillar": "Housing",
+    "unit": "count",
+    "format": "count",
+    "description": "Annualized permits for housing construction or renovation.",
+    "dataSourceIds": ["lowell_official"],
+    "updateFrequency": "Monthly",
+    "thresholds": { "direction": "up", "good": 420, "warn": 300, "alert": 200 }
+  },
+  {
+    "id": "commute_time",
+    "label": "Average Commute Time",
+    "pillar": "Mobility",
+    "unit": "minutes",
+    "format": "minutes",
+    "description": "Average one-way commute time for Lowell residents.",
+    "dataSourceIds": ["census_acs"],
+    "updateFrequency": "Annual",
+    "thresholds": { "direction": "down", "good": 24, "warn": 30, "alert": 36 }
+  },
+  {
+    "id": "transit_reliability",
+    "label": "Transit Reliability",
+    "pillar": "Mobility",
+    "unit": "% on-time",
+    "format": "percent",
+    "description": "Share of transit arrivals within the on-time window.",
+    "dataSourceIds": ["mbta"],
+    "updateFrequency": "Monthly",
+    "thresholds": { "direction": "up", "good": 85, "warn": 75, "alert": 65 }
+  },
+  {
+    "id": "mobility_311",
+    "label": "Mobility-Related 311 Requests",
+    "pillar": "Mobility",
+    "unit": "per 10k",
+    "format": "rate",
+    "description": "Mobility service requests per 10,000 residents.",
+    "dataSourceIds": ["lowell_311"],
+    "updateFrequency": "Monthly",
+    "thresholds": { "direction": "down", "good": 18, "warn": 30, "alert": 45 }
+  },
+  {
+    "id": "extreme_heat_days",
+    "label": "Extreme Heat Days",
+    "pillar": "Climate",
+    "unit": "days",
+    "format": "count",
+    "description": "Days per year above the extreme heat threshold.",
+    "dataSourceIds": ["noaa_ncei"],
+    "updateFrequency": "Annual",
+    "thresholds": { "direction": "down", "good": 5, "warn": 10, "alert": 16 }
+  },
+  {
+    "id": "precipitation_anomaly",
+    "label": "Precipitation Anomaly",
+    "pillar": "Climate",
+    "unit": "% above norm",
+    "format": "percent",
+    "description": "Deviation from 30-year precipitation norms.",
+    "dataSourceIds": ["noaa_ncei"],
+    "updateFrequency": "Annual",
+    "thresholds": { "direction": "down", "good": 5, "warn": 10, "alert": 18 }
+  },
+  {
+    "id": "air_quality_index",
+    "label": "Air Quality Index",
+    "pillar": "Climate",
+    "unit": "AQI",
+    "format": "index",
+    "description": "Average annual AQI score.",
+    "dataSourceIds": ["epa_aqs"],
+    "updateFrequency": "Monthly",
+    "thresholds": { "direction": "down", "good": 50, "warn": 80, "alert": 110 }
+  },
+  {
+    "id": "unemployment_rate",
+    "label": "Unemployment Rate",
+    "pillar": "Economy",
+    "unit": "%",
+    "format": "percent",
+    "description": "Share of labor force currently unemployed.",
+    "dataSourceIds": ["bls"],
+    "updateFrequency": "Monthly",
+    "thresholds": { "direction": "down", "good": 4.5, "warn": 6, "alert": 8 }
+  },
+  {
+    "id": "job_growth_proxy",
+    "label": "Job Growth Momentum",
+    "pillar": "Economy",
+    "unit": "%",
+    "format": "percent",
+    "description": "Year-over-year payroll growth proxy.",
+    "dataSourceIds": ["bls"],
+    "updateFrequency": "Quarterly",
+    "thresholds": { "direction": "up", "good": 2.5, "warn": 1, "alert": -0.5 }
+  },
+  {
+    "id": "income_inequality",
+    "label": "Income Inequality (Gini)",
+    "pillar": "Equity",
+    "unit": "index",
+    "format": "index",
+    "description": "Gini coefficient for income inequality.",
+    "dataSourceIds": ["census_acs"],
+    "updateFrequency": "Annual",
+    "thresholds": { "direction": "down", "good": 0.38, "warn": 0.45, "alert": 0.52 }
+  },
+  {
+    "id": "health_disparity",
+    "label": "Health Disparity Index",
+    "pillar": "Equity",
+    "unit": "index",
+    "format": "index",
+    "description": "Composite index of chronic disease and access gaps.",
+    "dataSourceIds": ["cdc_places"],
+    "updateFrequency": "Annual",
+    "thresholds": { "direction": "down", "good": 10, "warn": 18, "alert": 26 }
+  },
+  {
+    "id": "response_time_311",
+    "label": "311 Resolution Time",
+    "pillar": "Governance",
+    "unit": "days",
+    "format": "days",
+    "description": "Average time to close service requests.",
+    "dataSourceIds": ["lowell_311"],
+    "updateFrequency": "Monthly",
+    "thresholds": { "direction": "down", "good": 3, "warn": 6, "alert": 10 }
+  },
+  {
+    "id": "green_space_access",
+    "label": "Green Space Access",
+    "pillar": "Quality of Life",
+    "unit": "acres/1k",
+    "format": "ratio",
+    "description": "Accessible green space per 1,000 residents.",
+    "dataSourceIds": ["lowell_gis", "mass_gis"],
+    "updateFrequency": "Annual",
+    "thresholds": { "direction": "up", "good": 8, "warn": 5, "alert": 3 }
+  }
+]

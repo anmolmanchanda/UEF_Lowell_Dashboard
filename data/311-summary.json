@@ -1,0 +1,8 @@
+[
+  { "category": "Streetlight Outages", "volume": 382, "medianResolutionDays": 3.6 },
+  { "category": "Potholes", "volume": 295, "medianResolutionDays": 4.2 },
+  { "category": "Trash Overflow", "volume": 214, "medianResolutionDays": 2.4 },
+  { "category": "Sidewalk Repair", "volume": 176, "medianResolutionDays": 6.1 },
+  { "category": "Illegal Dumping", "volume": 142, "medianResolutionDays": 3.1 },
+  { "category": "Traffic Signal", "volume": 98, "medianResolutionDays": 1.8 }
+]

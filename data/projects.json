@@ -1,0 +1,68 @@
+[
+  {
+    "id": "heat_ready",
+    "name": "Heat Ready Neighborhoods",
+    "department": "Sustainability + Public Health",
+    "status": "Pilot",
+    "budget": 1.8,
+    "timeline": "2024 Q3 – 2025 Q2",
+    "outcome": "Cooling corridors and tree canopy upgrades in 3 zones.",
+    "metrics": ["extreme_heat_days", "air_quality_index"],
+    "notes": "Coordination with UMass Lowell climate lab."
+  },
+  {
+    "id": "corridor_safe",
+    "name": "Safe Corridor Mobility",
+    "department": "Transportation + Police",
+    "status": "Scale",
+    "budget": 3.2,
+    "timeline": "2024 Q2 – 2026 Q1",
+    "outcome": "Reduced incident hot spots and faster commute times.",
+    "metrics": ["commute_time", "mobility_311"],
+    "notes": "Prioritized downtown and South Lowell." 
+  },
+  {
+    "id": "permits_fast",
+    "name": "Permits Fast-Track",
+    "department": "Planning + Development Services",
+    "status": "Scale",
+    "budget": 0.9,
+    "timeline": "2024 Q1 – 2025 Q4",
+    "outcome": "Shorter approval times and higher permit throughput.",
+    "metrics": ["permits_issued", "response_time_311"],
+    "notes": "Cross-department review automation."
+  },
+  {
+    "id": "rent_relief",
+    "name": "Rent Relief Stabilization",
+    "department": "Housing + Community Services",
+    "status": "Pilot",
+    "budget": 2.4,
+    "timeline": "2024 Q4 – 2025 Q4",
+    "outcome": "Targeted aid for high-burden households.",
+    "metrics": ["median_rent", "housing_cost_burden"],
+    "notes": "Focus on Acre + Centralville." 
+  },
+  {
+    "id": "equity_bridge",
+    "name": "Equity Bridge Data Lab",
+    "department": "Equity Office + UMass Lowell",
+    "status": "Explore",
+    "budget": 0.6,
+    "timeline": "2025 Q1 – 2025 Q3",
+    "outcome": "Neighborhood-level equity diagnostic model.",
+    "metrics": ["income_inequality", "health_disparity"],
+    "notes": "Prototype for participatory metrics." 
+  },
+  {
+    "id": "green_loop",
+    "name": "Green Loop Access",
+    "department": "Parks + Planning",
+    "status": "Commercialize",
+    "budget": 4.1,
+    "timeline": "2023 Q3 – 2025 Q2",
+    "outcome": "Expanded green space access and maintenance automation.",
+    "metrics": ["green_space_access"],
+    "notes": "Public-private maintenance partnership." 
+  }
+]

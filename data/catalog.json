@@ -1,0 +1,122 @@
+[
+  {
+    "id": "lowell_official",
+    "name": "City of Lowell Official Site",
+    "source": "City of Lowell",
+    "url": "https://www.lowellma.gov/",
+    "license": "Public information",
+    "refreshCadence": "Weekly",
+    "lastUpdated": "2026-01-15",
+    "notes": "Primary city programs, departments, and service navigation."
+  },
+  {
+    "id": "lowell_311",
+    "name": "Lowell RequestTracker (311)",
+    "source": "City of Lowell",
+    "url": "https://www.lowellma.gov/requesttracker.aspx",
+    "license": "Public information",
+    "refreshCadence": "Monthly",
+    "lastUpdated": "2025-12-31",
+    "notes": "Service request volume and response time proxy."
+  },
+  {
+    "id": "lowell_gis",
+    "name": "Lowell GIS / Maps & Data",
+    "source": "City of Lowell",
+    "url": "https://www.lowellma.gov/200/Maps-Data",
+    "license": "Public information",
+    "refreshCadence": "Quarterly",
+    "lastUpdated": "2025-12-20",
+    "notes": "Parcels, zoning, and infrastructure layers."
+  },
+  {
+    "id": "mass_datahub",
+    "name": "Massachusetts Data Hub",
+    "source": "Commonwealth of Massachusetts",
+    "url": "https://data.mass.gov/",
+    "license": "Open data",
+    "refreshCadence": "Quarterly",
+    "lastUpdated": "2025-12-05",
+    "notes": "Statewide baselines for transportation, housing, and land use."
+  },
+  {
+    "id": "mass_gis",
+    "name": "MassGIS",
+    "source": "Commonwealth of Massachusetts",
+    "url": "https://www.mass.gov/info-details/massgis-data-download",
+    "license": "Open data",
+    "refreshCadence": "Quarterly",
+    "lastUpdated": "2025-11-18",
+    "notes": "Geospatial reference layers and road networks."
+  },
+  {
+    "id": "census_acs",
+    "name": "Census ACS",
+    "source": "US Census Bureau",
+    "url": "https://api.census.gov/data.html",
+    "license": "Public domain",
+    "refreshCadence": "Annual",
+    "lastUpdated": "2025-09-30",
+    "notes": "Demographics, housing, commuting, and income metrics."
+  },
+  {
+    "id": "cdc_places",
+    "name": "CDC PLACES",
+    "source": "Centers for Disease Control and Prevention",
+    "url": "https://www.cdc.gov/places/",
+    "license": "Public domain",
+    "refreshCadence": "Annual",
+    "lastUpdated": "2025-10-10",
+    "notes": "Local health indicators and disparities."
+  },
+  {
+    "id": "bls",
+    "name": "BLS Local Area Employment",
+    "source": "US Bureau of Labor Statistics",
+    "url": "https://www.bls.gov/developers/",
+    "license": "Public domain",
+    "refreshCadence": "Monthly",
+    "lastUpdated": "2025-12-31",
+    "notes": "Unemployment rate and labor market momentum."
+  },
+  {
+    "id": "epa_aqs",
+    "name": "EPA AQS",
+    "source": "US Environmental Protection Agency",
+    "url": "https://aqs.epa.gov/aqsweb/documents/data_api.html",
+    "license": "Public domain",
+    "refreshCadence": "Monthly",
+    "lastUpdated": "2025-12-15",
+    "notes": "Air quality measurements and AQI trends."
+  },
+  {
+    "id": "noaa_ncei",
+    "name": "NOAA NCEI Climate",
+    "source": "National Centers for Environmental Information",
+    "url": "https://www.ncei.noaa.gov/support/access-data-service-api-user-documentation",
+    "license": "Public domain",
+    "refreshCadence": "Monthly",
+    "lastUpdated": "2025-12-31",
+    "notes": "Temperature extremes and precipitation anomalies."
+  },
+  {
+    "id": "fema_nri",
+    "name": "FEMA National Risk Index",
+    "source": "Federal Emergency Management Agency",
+    "url": "https://hazards.fema.gov/nri/",
+    "license": "Public domain",
+    "refreshCadence": "Annual",
+    "lastUpdated": "2025-09-20",
+    "notes": "Hazard exposure and climate risk scoring."
+  },
+  {
+    "id": "mbta",
+    "name": "MBTA v3 API",
+    "source": "Massachusetts Bay Transportation Authority",
+    "url": "https://api-v3.mbta.com/",
+    "license": "Open data",
+    "refreshCadence": "Daily",
+    "lastUpdated": "2025-12-31",
+    "notes": "Transit reliability and service coverage metrics."
+  }
+]
