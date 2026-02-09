@@ -38,37 +38,15 @@ function computeRange(values: number[]) {
   return { min, max };
 }
 
-function buildPaint(
-  indicatorKey: string,
-  neighborhoods: Neighborhood[]
-): maplibregl.CircleLayer["paint"] {
+function buildPaint(indicatorKey: string, neighborhoods: Neighborhood[]) {
   const values = neighborhoods
     .map((hood) => hood.metrics[indicatorKey])
     .filter((value): value is number => typeof value === "number");
   const { min, max } = computeRange(values);
 
-  const color = [
-    "interpolate",
-    ["linear"],
-    ["get", indicatorKey],
-    min,
-    "#cfd8ec",
-    max,
-    "#0b3d91"
-  ] as maplibregl.ExpressionSpecification;
-  const radius = [
-    "interpolate",
-    ["linear"],
-    ["get", indicatorKey],
-    min,
-    6,
-    max,
-    18
-  ] as maplibregl.ExpressionSpecification;
-
   return {
-    "circle-color": color,
-    "circle-radius": radius,
+    "circle-color": ["interpolate", ["linear"], ["get", indicatorKey], min, "#cfd8ec", max, "#0b3d91"],
+    "circle-radius": ["interpolate", ["linear"], ["get", indicatorKey], min, 6, max, 18],
     "circle-opacity": 0.82,
     "circle-stroke-width": 1,
     "circle-stroke-color": "#0b0f1a"
@@ -111,8 +89,8 @@ export default function NeighborhoodMap({
           id: LAYER_ID,
           type: "circle",
           source: SOURCE_ID,
-          paint: buildPaint(indicatorKey, neighborhoods)
-        });
+          paint: buildPaint(indicatorKey, neighborhoods) as any
+        } as any);
 
         map.setPaintProperty(LAYER_ID, "circle-color-transition", { duration: 650 });
         map.setPaintProperty(LAYER_ID, "circle-radius-transition", { duration: 650 });
@@ -156,8 +134,9 @@ export default function NeighborhoodMap({
       source.setData(geojson);
     }
     if (map.getLayer(LAYER_ID)) {
-      map.setPaintProperty(LAYER_ID, "circle-color", buildPaint(indicatorKey, neighborhoods)["circle-color"]);
-      map.setPaintProperty(LAYER_ID, "circle-radius", buildPaint(indicatorKey, neighborhoods)["circle-radius"]);
+      const paint = buildPaint(indicatorKey, neighborhoods) as any;
+      map.setPaintProperty(LAYER_ID, "circle-color", paint["circle-color"]);
+      map.setPaintProperty(LAYER_ID, "circle-radius", paint["circle-radius"]);
     }
   }, [geojson, indicatorKey, neighborhoods]);
 
