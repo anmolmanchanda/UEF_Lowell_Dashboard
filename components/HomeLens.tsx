@@ -79,6 +79,10 @@ export default function HomeLens({
   const [expanded, setExpanded] = useState(false);
   const [mapLayerId, setMapLayerId] = useState(LAYERS[0].id);
   const [mapView, setMapView] = useState<"bubbles" | "heatmap">("bubbles");
+  const [compareMode, setCompareMode] = useState(false);
+  const [compareIndicatorId, setCompareIndicatorId] = useState("");
+  const [storyMode, setStoryMode] = useState(false);
+  const [storyIndex, setStoryIndex] = useState(0);
   const [lensVisible, setLensVisible] = useState(true);
 
   useEffect(() => {
@@ -94,6 +98,73 @@ export default function HomeLens({
   }, [focus, summaries]);
 
   const mapIndicatorDef = indicators.find((indicator) => indicator.id === mapLayerId);
+  const indicatorOptions = useMemo(
+    () =>
+      indicators.filter((indicator) =>
+        neighborhoods.some((hood) =>
+          Object.prototype.hasOwnProperty.call(hood.metrics, indicator.id)
+        )
+      ),
+    [indicators, neighborhoods]
+  );
+  const compareIndicatorDef = indicators.find((indicator) => indicator.id === compareIndicatorId);
+
+  useEffect(() => {
+    if (!indicatorOptions.length) return;
+    if (!compareIndicatorId || compareIndicatorId === mapLayerId) {
+      const next = indicatorOptions.find((indicator) => indicator.id !== mapLayerId);
+      if (next) setCompareIndicatorId(next.id);
+    }
+  }, [compareIndicatorId, indicatorOptions, mapLayerId]);
+
+  const indicatorValues = useMemo(() => {
+    return neighborhoods
+      .map((hood) => hood.metrics[mapLayerId])
+      .filter((value): value is number => typeof value === "number");
+  }, [neighborhoods, mapLayerId]);
+
+  const indicatorAverage = useMemo(() => {
+    if (!indicatorValues.length) return 0;
+    return indicatorValues.reduce((sum, value) => sum + value, 0) / indicatorValues.length;
+  }, [indicatorValues]);
+
+  const storyItems = useMemo(() => {
+    return neighborhoods
+      .map((hood) => ({
+        id: hood.id,
+        name: hood.name,
+        lat: hood.lat,
+        lon: hood.lon,
+        value: hood.metrics[mapLayerId]
+      }))
+      .filter((item): item is { id: string; name: string; lat: number; lon: number; value: number } =>
+        typeof item.value === "number"
+      )
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+  }, [neighborhoods, mapLayerId]);
+
+  useEffect(() => {
+    if (!storyMode) return;
+    if (!storyItems.length) return;
+    setStoryIndex(0);
+    const timer = window.setInterval(() => {
+      setStoryIndex((prev) => (prev + 1) % storyItems.length);
+    }, 7000);
+    return () => window.clearInterval(timer);
+  }, [storyMode, storyItems.length, mapLayerId]);
+
+  const activeStory = storyItems.length ? storyItems[storyIndex % storyItems.length] : null;
+  const storyNarrative =
+    activeStory && mapIndicatorDef
+      ? (() => {
+          const diff = activeStory.value - indicatorAverage;
+          const direction = diff >= 0 ? "above" : "below";
+          const diffText = formatValue(Math.abs(diff), mapIndicatorDef.format);
+          const avgText = formatValue(indicatorAverage, mapIndicatorDef.format);
+          return `${activeStory.name} sits ${direction} the city average (${avgText}) by ${diffText}.`;
+        })()
+      : null;
 
   const hotspot = useMemo<{ name: string; value: number } | null>(() => {
     const target = mapLayerId;
@@ -112,12 +183,50 @@ export default function HomeLens({
   return (
     <div className="home-surface">
       <div className="map-hero">
-        <NeighborhoodMap
-          neighborhoods={neighborhoods}
-          className="full"
-          indicatorKey={mapLayerId}
-          viewMode={mapView}
-        />
+        {compareMode ? (
+          <div className="map-compare">
+            <div className="map-compare-item">
+              <NeighborhoodMap
+                neighborhoods={neighborhoods}
+                className="full"
+                indicatorKey={mapLayerId}
+                viewMode={mapView}
+                focus={
+                  storyMode && activeStory
+                    ? { id: activeStory.id, lat: activeStory.lat, lon: activeStory.lon }
+                    : null
+                }
+              />
+              <div className="map-title">Primary: {mapIndicatorDef?.label ?? "Indicator"}</div>
+            </div>
+            <div className="map-compare-item">
+              <NeighborhoodMap
+                neighborhoods={neighborhoods}
+                className="full"
+                indicatorKey={compareIndicatorId || mapLayerId}
+                viewMode={mapView}
+                focus={
+                  storyMode && activeStory
+                    ? { id: activeStory.id, lat: activeStory.lat, lon: activeStory.lon }
+                    : null
+                }
+              />
+              <div className="map-title">Compare: {compareIndicatorDef?.label ?? "Indicator"}</div>
+            </div>
+          </div>
+        ) : (
+          <NeighborhoodMap
+            neighborhoods={neighborhoods}
+            className="full"
+            indicatorKey={mapLayerId}
+            viewMode={mapView}
+            focus={
+              storyMode && activeStory
+                ? { id: activeStory.id, lat: activeStory.lat, lon: activeStory.lon }
+                : null
+            }
+          />
+        )}
         {lensVisible ? (
           <div className="map-overlay">
             <div className="map-overlay-header">
@@ -126,6 +235,12 @@ export default function HomeLens({
                 <div className="overlay-title">{focus.label} Focus</div>
               </div>
               <div className="map-overlay-actions">
+                <button className="secondary" onClick={() => setStoryMode((prev) => !prev)}>
+                  {storyMode ? "Stop story" : "Story mode"}
+                </button>
+                <button className="secondary" onClick={() => setCompareMode((prev) => !prev)}>
+                  {compareMode ? "Single view" : "Compare"}
+                </button>
                 <button className="secondary" onClick={() => setLensVisible(false)}>
                   Hide lens
                 </button>
@@ -175,6 +290,31 @@ export default function HomeLens({
                 ))}
               </div>
             </div>
+            {compareMode ? (
+              <div>
+                <div className="stat-label">Compare Indicator</div>
+                <select
+                  style={{
+                    display: "block",
+                    marginTop: 6,
+                    padding: "8px 10px",
+                    borderRadius: 10,
+                    border: "1px solid var(--stroke)",
+                    width: "100%"
+                  }}
+                  value={compareIndicatorId}
+                  onChange={(event) => setCompareIndicatorId(event.target.value)}
+                >
+                  {indicatorOptions
+                    .filter((indicator) => indicator.id !== mapLayerId)
+                    .map((indicator) => (
+                      <option key={indicator.id} value={indicator.id}>
+                        {indicator.label}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            ) : null}
 
             <div className="overlay-metrics">
               {focusIndicators.slice(0, 2).map((item) => (
@@ -193,6 +333,19 @@ export default function HomeLens({
                 <div className="insight-sub">
                   {mapIndicatorDef.label}: {formatValue(hotspot.value, mapIndicatorDef.format)}
                 </div>
+              </div>
+            ) : null}
+
+            {storyMode && activeStory && mapIndicatorDef ? (
+              <div className="story-card">
+                <div className="stat-label">
+                  Story mode · Stop {storyIndex + 1}/{storyItems.length}
+                </div>
+                <div className="overlay-title">{activeStory.name}</div>
+                <div className="insight-sub">
+                  {mapIndicatorDef.label}: {formatValue(activeStory.value, mapIndicatorDef.format)}
+                </div>
+                {storyNarrative ? <div className="insight-sub">{storyNarrative}</div> : null}
               </div>
             ) : null}
 

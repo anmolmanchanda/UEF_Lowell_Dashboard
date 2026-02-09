@@ -13,6 +13,8 @@ const LAYER_ID = "neighborhood-circles";
 const GLOW_LAYER_ID = "neighborhood-glow";
 const HEAT_LAYER_ID = "neighborhood-heat";
 const LABEL_LAYER_ID = "neighborhood-labels";
+const PULSE_LAYER_ID = "neighborhood-pulse";
+const FOCUS_LAYER_ID = "neighborhood-focus";
 const SOURCE_ID = "neighborhoods";
 const MAX_LABELS = 5;
 
@@ -115,7 +117,7 @@ function buildHeatPaint(indicatorKey: string, neighborhoods: Neighborhood[]) {
 function applyVisibility(map: maplibregl.Map, viewMode: "bubbles" | "heatmap") {
   const bubblesVisible = viewMode === "bubbles" ? "visible" : "none";
   const heatVisible = viewMode === "heatmap" ? "visible" : "none";
-  [LAYER_ID, GLOW_LAYER_ID, LABEL_LAYER_ID].forEach((layerId) => {
+  [LAYER_ID, GLOW_LAYER_ID].forEach((layerId) => {
     if (map.getLayer(layerId)) {
       map.setLayoutProperty(layerId, "visibility", bubblesVisible);
     }
@@ -123,6 +125,11 @@ function applyVisibility(map: maplibregl.Map, viewMode: "bubbles" | "heatmap") {
   if (map.getLayer(HEAT_LAYER_ID)) {
     map.setLayoutProperty(HEAT_LAYER_ID, "visibility", heatVisible);
   }
+  [LABEL_LAYER_ID, PULSE_LAYER_ID].forEach((layerId) => {
+    if (map.getLayer(layerId)) {
+      map.setLayoutProperty(layerId, "visibility", "visible");
+    }
+  });
 }
 
 export default function NeighborhoodMap({
@@ -130,17 +137,20 @@ export default function NeighborhoodMap({
   className,
   height = 420,
   indicatorKey = "median_rent",
-  viewMode = "bubbles"
+  viewMode = "bubbles",
+  focus
 }: {
   neighborhoods: Neighborhood[];
   className?: string;
   height?: number | string;
   indicatorKey?: string;
   viewMode?: "bubbles" | "heatmap";
+  focus?: { id: string; lat: number; lon: number; zoom?: number } | null;
 }) {
   const mapRef = useRef<maplibregl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const indicatorRef = useRef(indicatorKey);
+  const pulseFrameRef = useRef<number | null>(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
@@ -180,10 +190,33 @@ export default function NeighborhoodMap({
           paint: buildGlowPaint(indicatorKey, neighborhoods) as any
         } as any);
         map.addLayer({
+          id: PULSE_LAYER_ID,
+          type: "circle",
+          source: SOURCE_ID,
+          filter: ["==", ["get", "rank"], 1],
+          paint: {
+            "circle-color": "rgba(11, 61, 145, 0.35)",
+            "circle-radius": 18,
+            "circle-opacity": 0.45
+          }
+        } as any);
+        map.addLayer({
           id: LAYER_ID,
           type: "circle",
           source: SOURCE_ID,
           paint: buildPaint(indicatorKey, neighborhoods) as any
+        } as any);
+        map.addLayer({
+          id: FOCUS_LAYER_ID,
+          type: "circle",
+          source: SOURCE_ID,
+          filter: ["==", ["get", "id"], ""],
+          paint: {
+            "circle-color": "rgba(0, 0, 0, 0)",
+            "circle-radius": 26,
+            "circle-stroke-width": 2.4,
+            "circle-stroke-color": "rgba(0, 141, 143, 0.9)"
+          }
         } as any);
         map.addLayer({
           id: LABEL_LAYER_ID,
@@ -207,6 +240,17 @@ export default function NeighborhoodMap({
         map.setPaintProperty(LAYER_ID, "circle-radius-transition", { duration: 650 });
         map.setPaintProperty(GLOW_LAYER_ID, "circle-color-transition", { duration: 650 });
         map.setPaintProperty(GLOW_LAYER_ID, "circle-radius-transition", { duration: 650 });
+
+        const animatePulse = (time: number) => {
+          if (!map || !map.getLayer(PULSE_LAYER_ID)) return;
+          const pulse = (Math.sin(time / 600) + 1) / 2;
+          const radius = 18 + pulse * 12;
+          const opacity = 0.25 + (1 - pulse) * 0.35;
+          map.setPaintProperty(PULSE_LAYER_ID, "circle-radius", radius);
+          map.setPaintProperty(PULSE_LAYER_ID, "circle-opacity", opacity);
+          pulseFrameRef.current = requestAnimationFrame(animatePulse);
+        };
+        pulseFrameRef.current = requestAnimationFrame(animatePulse);
 
         map.on("mouseenter", LAYER_ID, () => {
           map?.getCanvas().style.setProperty("cursor", "pointer");
@@ -237,6 +281,9 @@ export default function NeighborhoodMap({
     mapRef.current = map;
 
     return () => {
+      if (pulseFrameRef.current) {
+        cancelAnimationFrame(pulseFrameRef.current);
+      }
       map?.remove();
       mapRef.current = null;
     };
@@ -266,6 +313,28 @@ export default function NeighborhoodMap({
       map.setPaintProperty(HEAT_LAYER_ID, "heatmap-radius", heat["heatmap-radius"]);
     }
   }, [geojson, indicatorKey, neighborhoods]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !map.getLayer(FOCUS_LAYER_ID)) return;
+    if (!focus?.id) {
+      map.setLayoutProperty(FOCUS_LAYER_ID, "visibility", "none");
+      return;
+    }
+    map.setLayoutProperty(FOCUS_LAYER_ID, "visibility", "visible");
+    map.setFilter(FOCUS_LAYER_ID, ["==", ["get", "id"], focus.id]);
+  }, [focus?.id]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !focus?.id) return;
+    map.flyTo({
+      center: [focus.lon, focus.lat],
+      zoom: focus.zoom ?? 13.6,
+      speed: 0.7,
+      essential: true
+    });
+  }, [focus?.id, focus?.lat, focus?.lon, focus?.zoom]);
 
   useEffect(() => {
     const map = mapRef.current;

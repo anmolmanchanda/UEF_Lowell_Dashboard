@@ -456,6 +456,36 @@ main {
   position: relative;
 }
 
+.map-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  height: 100svh;
+}
+
+.map-compare-item {
+  position: relative;
+  height: 100%;
+}
+
+.map-compare .map-shell.full {
+  height: 100%;
+  min-height: 100%;
+}
+
+.map-title {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow);
+}
+
 .map-overlay {
   position: absolute;
   top: 20px;
@@ -482,6 +512,7 @@ main {
 .map-overlay-actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .lens-toggle {
@@ -553,6 +584,12 @@ main {
 
 .overlay-ai {
   background: rgba(0, 141, 143, 0.08);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.story-card {
+  background: rgba(11, 61, 145, 0.08);
   border-radius: 12px;
   padding: 10px;
 }
@@ -682,6 +719,13 @@ main {
   }
   .home-surface {
     margin: -24px -24px 0;
+  }
+  .map-compare {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .map-compare .map-shell.full {
+    height: 70vh;
   }
 }
 
