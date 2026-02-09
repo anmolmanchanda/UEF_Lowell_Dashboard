@@ -40,9 +40,9 @@ async function ensureSchema() {
 export async function readIndicatorSeries(): Promise<IndicatorSeries | null> {
   if (!sql) return null;
   await ensureSchema();
-  const rows = await sql<{ id: string; series: unknown }[]>`
+  const rows = (await sql`
     SELECT id, series FROM indicator_series;
-  `;
+  `) as { id: string; series: unknown }[];
   if (!rows.length) return null;
   const result: IndicatorSeries = {};
   rows.forEach((row) => {
@@ -69,9 +69,9 @@ export async function writeIndicatorSeries(series: IndicatorSeries) {
 export async function readNeighborhoods(): Promise<Neighborhood[] | null> {
   if (!sql) return null;
   await ensureSchema();
-  const rows = await sql<{ payload: Neighborhood[] }[]>`
+  const rows = (await sql`
     SELECT payload FROM neighborhoods WHERE id = 'default' LIMIT 1;
-  `;
+  `) as { payload: Neighborhood[] }[];
   return rows[0]?.payload ?? null;
 }
 
@@ -90,9 +90,9 @@ export async function writeNeighborhoods(payload: Neighborhood[]) {
 export async function readProjects(): Promise<Project[] | null> {
   if (!sql) return null;
   await ensureSchema();
-  const rows = await sql<{ payload: Project[] }[]>`
+  const rows = (await sql`
     SELECT payload FROM projects WHERE id = 'default' LIMIT 1;
-  `;
+  `) as { payload: Project[] }[];
   return rows[0]?.payload ?? null;
 }
 
@@ -111,9 +111,9 @@ export async function writeProjects(payload: Project[]) {
 export async function readInternalAggregates(): Promise<InternalAggregate | null> {
   if (!sql) return null;
   await ensureSchema();
-  const rows = await sql<{ payload: InternalAggregate }[]>`
+  const rows = (await sql`
     SELECT payload FROM internal_aggregates WHERE id = 'default' LIMIT 1;
-  `;
+  `) as { payload: InternalAggregate }[];
   return rows[0]?.payload ?? null;
 }
 
