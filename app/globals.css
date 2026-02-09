@@ -135,6 +135,19 @@ main {
   color: var(--muted);
 }
 
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -198,6 +211,51 @@ main {
   margin-top: 24px;
 }
 
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.insight-card {
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow);
+}
+
+.insight-title {
+  font-family: var(--font-space), "Segoe UI", sans-serif;
+  font-size: 16px;
+  margin-top: 6px;
+}
+
+.insight-value {
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.insight-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.data-card {
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: #fff;
+}
+
 .chart-card {
   padding: 18px;
   border-radius: 16px;
@@ -240,6 +298,57 @@ main {
   font-family: var(--font-space), "Segoe UI", sans-serif;
   font-size: 18px;
   margin-top: 6px;
+}
+
+.lane-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.lane-column {
+  background: #f7f8fb;
+  border-radius: 16px;
+  padding: 12px;
+  border: 1px solid var(--stroke);
+}
+
+.lane-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.lane-cards {
+  display: grid;
+  gap: 10px;
+}
+
+.project-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  padding: 12px;
+}
+
+.project-title {
+  font-family: var(--font-space), "Segoe UI", sans-serif;
+  font-size: 15px;
+}
+
+.project-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.project-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .chart-card h3 {
@@ -426,6 +535,9 @@ main {
     grid-template-columns: 1fr;
   }
   .lens-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-grid {
     grid-template-columns: 1fr;
   }
 }

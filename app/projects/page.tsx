@@ -1,6 +1,8 @@
 import ChartCard from "@/components/ChartCard";
 import { getProjects } from "@/lib/data";
 
+const STATUS_ORDER = ["Explore", "Pilot", "Scale", "Commercialize"] as const;
+
 export default async function ProjectsPage() {
   const projects = await getProjects();
   const statusCounts = projects.reduce<Record<string, number>>((acc, project) => {
@@ -48,6 +50,41 @@ export default async function ProjectsPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="panel" style={{ marginTop: 24, padding: 18 }}>
+        <h3 className="section-title">Lifecycle Board</h3>
+        <div className="lane-grid">
+          {STATUS_ORDER.map((status) => (
+            <div key={status} className="lane-column">
+              <div className="lane-header">
+                <span>{status}</span>
+                <span className="badge">{statusCounts[status] ?? 0}</span>
+              </div>
+              <div className="lane-cards">
+                {projects
+                  .filter((project) => project.status === status)
+                  .map((project) => (
+                    <div key={project.id} className="project-card">
+                      <div className="project-title">{project.name}</div>
+                      <div className="project-sub">{project.department}</div>
+                      <div className="project-metrics">
+                        <div>
+                          <div className="stat-label">Budget</div>
+                          <div className="stat-value">${project.budget.toFixed(1)}M</div>
+                        </div>
+                        <div>
+                          <div className="stat-label">Timeline</div>
+                          <div className="stat-value">{project.timeline}</div>
+                        </div>
+                      </div>
+                      <div className="project-sub">{project.outcome}</div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
