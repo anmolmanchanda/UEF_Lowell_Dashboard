@@ -4,7 +4,6 @@ import { getCatalog, getIndicatorDefinitions, getIndicatorSeries, getInternalAgg
 import { buildIndicatorSummary } from "@/lib/indicators";
 import { formatValue } from "@/lib/format";
 
-import OpenAI from "openai";
 
 const INJECTION_PATTERNS = [
   /ignore (previous|above)/i,
@@ -29,7 +28,6 @@ const KEYWORD_MAP: Record<string, string[]> = {
 const MAX_INDICATORS = 8;
 
 const openaiApiKey = process.env.OPENAI_API_KEY;
-const openai = openaiApiKey ? new OpenAI({ apiKey: openaiApiKey }) : null;
 
 const MODEL_MINI = process.env.OPENAI_MODEL_MINI ?? "gpt-5-mini";
 const MODEL_NARRATIVE = process.env.OPENAI_MODEL_NARRATIVE ?? "gpt-5.2";
@@ -116,7 +114,7 @@ export async function POST(request: NextRequest) {
       url: entry!.url
     }));
 
-  if (!openai) {
+  if (!openaiApiKey) {
     return NextResponse.json({
       answer: baseAnswer,
       citations,
@@ -160,13 +158,38 @@ export async function POST(request: NextRequest) {
 
   try {
     const maxOutputTokens = task === "narrative" ? 1200 : 450;
-    const response = await openai.responses.create({
-      model,
-      input: prompt,
-      max_output_tokens: maxOutputTokens
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${openaiApiKey}`
+      },
+      body: JSON.stringify({
+        model,
+        input: prompt,
+        max_output_tokens: maxOutputTokens
+      })
     });
 
-    const answer = response.output_text ?? baseAnswer;
+    if (!response.ok) {
+      throw new Error(`OpenAI API error ${response.status}`);
+    }
+
+    const data = (await response.json()) as {
+      output_text?: string;
+      output?: { content?: { type?: string; text?: string }[] }[];
+    };
+
+    const extracted =
+      data.output_text ??
+      data.output
+        ?.flatMap((item) => item.content ?? [])
+        .filter((item) => item.type === "output_text" || item.type === "text")
+        .map((item) => item.text ?? "")
+        .join("\n")
+        .trim();
+
+    const answer = extracted && extracted.length > 0 ? extracted : baseAnswer;
 
     return NextResponse.json({
       answer,
