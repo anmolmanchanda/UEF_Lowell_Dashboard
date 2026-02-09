@@ -3,6 +3,8 @@ import { fetchCensusIndicators } from "./sources-census";
 import { fetchBlsIndicators } from "./sources-bls";
 import { fetchMbtaReliability } from "./sources-mbta";
 import { fetchNoaaClimate } from "./sources-noaa";
+import { fetchCdcPlacesIndicators } from "./sources-cdc";
+import { fetchEpaAqsIndicators } from "./sources-epa";
 
 export type SourceResult = {
   updatedSeries: Partial<IndicatorSeries>;
@@ -45,6 +47,20 @@ export const SOURCE_REGISTRY: SourceHandler[] = [
     cadence: "monthly",
     requiredEnv: ["NOAA_TOKEN", "NOAA_STATION_ID"],
     fetcher: fetchNoaaClimate
+  },
+  {
+    id: "cdc_places",
+    label: "CDC PLACES",
+    cadence: "annual",
+    requiredEnv: ["CDC_PLACES_ENDPOINT", "CDC_PLACES_MEASURE_ID"],
+    fetcher: fetchCdcPlacesIndicators
+  },
+  {
+    id: "epa_aqs",
+    label: "EPA AQS",
+    cadence: "monthly",
+    requiredEnv: ["EPA_AQS_EMAIL", "EPA_AQS_KEY", "EPA_AQS_ENDPOINT"],
+    fetcher: fetchEpaAqsIndicators
   }
 ];
 
