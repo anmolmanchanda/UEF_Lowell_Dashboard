@@ -1,3 +1,5 @@
+\"use client\";
+
 import { formatDelta, formatValue } from "@/lib/format";
 
 export type KpiSummary = {

@@ -7,7 +7,13 @@ import { Neighborhood } from "@/lib/types";
 
 const MAP_STYLE = "https://demotiles.maplibre.org/style.json";
 
-export default function NeighborhoodMap({ neighborhoods }: { neighborhoods: Neighborhood[] }) {
+type Props = {
+  neighborhoods: Neighborhood[];
+  className?: string;
+  height?: number | string;
+};
+
+export default function NeighborhoodMap({ neighborhoods, className, height = 420 }: Props) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -44,7 +50,11 @@ export default function NeighborhoodMap({ neighborhoods }: { neighborhoods: Neig
   }, [neighborhoods]);
 
   return (
-    <div className="map-shell" ref={mapRef}>
+    <div
+      className={`map-shell ${className ?? ""}`}
+      ref={mapRef}
+      style={{ height }}
+    >
       {failed ? (
         <div style={{ padding: 16, color: "var(--muted)" }}>
           Map tiles unavailable. Showing neighborhood table below.
