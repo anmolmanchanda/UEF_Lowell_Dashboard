@@ -448,7 +448,8 @@ main {
 }
 
 .map-shell.full {
-  min-height: 72vh;
+  height: 100svh;
+  min-height: 100vh;
 }
 
 .map-hero {
@@ -571,7 +572,7 @@ main {
 }
 
 .home-surface {
-  margin: -32px -36px 0;
+  margin: -32px -36px -72px;
 }
 
 .table {
