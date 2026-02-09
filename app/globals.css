@@ -478,6 +478,26 @@ main {
   gap: 12px;
 }
 
+.map-overlay-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.lens-toggle {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
 .overlay-title {
   font-family: var(--font-space), "Segoe UI", sans-serif;
   font-size: 16px;

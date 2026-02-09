@@ -39,7 +39,7 @@ export async function fetchCdcPlacesIndicators(
   const fieldState = process.env.CDC_PLACES_FIELD_STATE ?? "stateabbr";
   const fieldYear = process.env.CDC_PLACES_FIELD_YEAR ?? "year";
   const fieldMeasure = process.env.CDC_PLACES_FIELD_MEASURE ?? "measureid";
-  const fieldValue = process.env.CDC_PLACES_FIELD_VALUE ?? "datavalue";
+  const fieldValue = process.env.CDC_PLACES_FIELD_VALUE ?? "data_value";
 
   const filters: string[] = [`${fieldMeasure}='${escapeValue(measureId)}'`];
   if (locationId) {

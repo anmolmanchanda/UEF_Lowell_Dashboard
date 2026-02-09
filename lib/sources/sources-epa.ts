@@ -30,7 +30,7 @@ export async function fetchEpaAqsIndicators(
     };
   }
 
-  const baseUrl = process.env.EPA_AQS_BASE_URL ?? "https://aqs.epa.gov/aqsweb/api";
+  const baseUrl = process.env.EPA_AQS_BASE_URL ?? "https://aqs.epa.gov/data/api";
   const param = process.env.EPA_AQS_PARAMETER;
   const state = process.env.EPA_AQS_STATE;
   const county = process.env.EPA_AQS_COUNTY;

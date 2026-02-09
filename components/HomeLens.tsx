@@ -73,6 +73,7 @@ export default function HomeLens({
   const [focusId, setFocusId] = useState(FOCUS_CHIPS[0].id);
   const [expanded, setExpanded] = useState(false);
   const [mapLayerId, setMapLayerId] = useState(LAYERS[0].id);
+  const [lensVisible, setLensVisible] = useState(true);
 
   useEffect(() => {
     const mapped = FOCUS_LAYER_MAP[focusId];
@@ -106,86 +107,97 @@ export default function HomeLens({
     <div className="home-surface">
       <div className="map-hero">
         <NeighborhoodMap neighborhoods={neighborhoods} className="full" indicatorKey={mapLayerId} />
-        <div className="map-overlay">
-          <div className="map-overlay-header">
-            <div>
-              <div className="stat-label">Neighborhood Lens</div>
-              <div className="overlay-title">{focus.label} Focus</div>
+        {lensVisible ? (
+          <div className="map-overlay">
+            <div className="map-overlay-header">
+              <div>
+                <div className="stat-label">Neighborhood Lens</div>
+                <div className="overlay-title">{focus.label} Focus</div>
+              </div>
+              <div className="map-overlay-actions">
+                <button className="secondary" onClick={() => setLensVisible(false)}>
+                  Hide lens
+                </button>
+                <button className="secondary" onClick={() => setExpanded((prev) => !prev)}>
+                  {expanded ? "Hide details" : "Explore deeper"}
+                </button>
+              </div>
             </div>
-            <button className="secondary" onClick={() => setExpanded((prev) => !prev)}>
-              {expanded ? "Hide details" : "Explore deeper"}
-            </button>
-          </div>
-          <div className="chip-row">
-            {FOCUS_CHIPS.map((chip) => (
-              <button
-                key={chip.id}
-                className={`chip ${chip.id === focusId ? "active" : ""}`}
-                onClick={() => setFocusId(chip.id)}
-              >
-                {chip.label}
-              </button>
-            ))}
-          </div>
-          <div className="overlay-copy">{focus.description}</div>
-
-          <div>
-            <div className="stat-label">Map Layer</div>
-            <div className="chip-row" style={{ marginTop: 6 }}>
-              {LAYERS.map((layer) => (
+            <div className="chip-row">
+              {FOCUS_CHIPS.map((chip) => (
                 <button
-                  key={layer.id}
-                  className={`chip ${layer.id === mapLayerId ? "active" : ""}`}
-                  onClick={() => setMapLayerId(layer.id)}
+                  key={chip.id}
+                  className={`chip ${chip.id === focusId ? "active" : ""}`}
+                  onClick={() => setFocusId(chip.id)}
                 >
-                  {layer.label}
+                  {chip.label}
                 </button>
               ))}
             </div>
-          </div>
+            <div className="overlay-copy">{focus.description}</div>
 
-          <div className="overlay-metrics">
-            {focusIndicators.slice(0, 2).map((item) => (
-              <div key={item.id} className="overlay-metric">
-                <div className="stat-label">{item.label}</div>
-                <div className="stat-value">{formatValue(item.latest, item.format)}</div>
-                <div className="insight-sub">{item.trend}</div>
-              </div>
-            ))}
-          </div>
-
-          {hotspot && mapIndicatorDef ? (
-            <div className="overlay-highlight">
-              <div className="stat-label">Highest signal right now</div>
-              <div className="overlay-title">{hotspot.name}</div>
-              <div className="insight-sub">
-                {mapIndicatorDef.label}: {formatValue(hotspot.value, mapIndicatorDef.format)}
+            <div>
+              <div className="stat-label">Map Layer</div>
+              <div className="chip-row" style={{ marginTop: 6 }}>
+                {LAYERS.map((layer) => (
+                  <button
+                    key={layer.id}
+                    className={`chip ${layer.id === mapLayerId ? "active" : ""}`}
+                    onClick={() => setMapLayerId(layer.id)}
+                  >
+                    {layer.label}
+                  </button>
+                ))}
               </div>
             </div>
-          ) : null}
 
-          <div className="overlay-ai">
-            <div className="stat-label">Ask Lowell</div>
-            <div className="insight-sub">Suggested question</div>
-            <div className="overlay-title">{focus.prompt}</div>
-          </div>
-
-          {expanded ? (
-            <div className="overlay-detail">
-              {focusIndicators.map((item) => {
-                const def = indicators.find((indicator) => indicator.id === item.id);
-                const status = def ? getStatus(def, item.latest) : "warn";
-                return (
-                  <div key={item.id} className="overlay-detail-card">
-                    <div className="stat-label">{item.label}</div>
-                    <div className="stat-value">{formatValue(item.latest, item.format)}</div>
-                    <span className={`badge ${status}`}>{item.trend}</span>
-                  </div>
-                );
-              })}
+            <div className="overlay-metrics">
+              {focusIndicators.slice(0, 2).map((item) => (
+                <div key={item.id} className="overlay-metric">
+                  <div className="stat-label">{item.label}</div>
+                  <div className="stat-value">{formatValue(item.latest, item.format)}</div>
+                  <div className="insight-sub">{item.trend}</div>
+                </div>
+              ))}
             </div>
-          ) : null}
-        </div>
+
+            {hotspot && mapIndicatorDef ? (
+              <div className="overlay-highlight">
+                <div className="stat-label">Highest signal right now</div>
+                <div className="overlay-title">{hotspot.name}</div>
+                <div className="insight-sub">
+                  {mapIndicatorDef.label}: {formatValue(hotspot.value, mapIndicatorDef.format)}
+                </div>
+              </div>
+            ) : null}
+
+            <div className="overlay-ai">
+              <div className="stat-label">Ask Lowell</div>
+              <div className="insight-sub">Suggested question</div>
+              <div className="overlay-title">{focus.prompt}</div>
+            </div>
+
+            {expanded ? (
+              <div className="overlay-detail">
+                {focusIndicators.map((item) => {
+                  const def = indicators.find((indicator) => indicator.id === item.id);
+                  const status = def ? getStatus(def, item.latest) : "warn";
+                  return (
+                    <div key={item.id} className="overlay-detail-card">
+                      <div className="stat-label">{item.label}</div>
+                      <div className="stat-value">{formatValue(item.latest, item.format)}</div>
+                      <span className={`badge ${status}`}>{item.trend}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <button className="lens-toggle" onClick={() => setLensVisible(true)}>
+            Show Neighborhood Lens
+          </button>
+        )}
       </div>
     </div>
   );
