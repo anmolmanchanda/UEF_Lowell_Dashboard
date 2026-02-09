@@ -50,7 +50,7 @@ function buildPaint(indicatorKey: string, neighborhoods: Neighborhood[]) {
     "circle-opacity": 0.82,
     "circle-stroke-width": 1,
     "circle-stroke-color": "#0b0f1a"
-  } as maplibregl.CirclePaint;
+  };
 }
 
 export default function NeighborhoodMap({
