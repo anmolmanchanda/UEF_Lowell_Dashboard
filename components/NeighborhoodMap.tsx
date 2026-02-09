@@ -38,15 +38,37 @@ function computeRange(values: number[]) {
   return { min, max };
 }
 
-function buildPaint(indicatorKey: string, neighborhoods: Neighborhood[]) {
+function buildPaint(
+  indicatorKey: string,
+  neighborhoods: Neighborhood[]
+): maplibregl.CircleLayer["paint"] {
   const values = neighborhoods
     .map((hood) => hood.metrics[indicatorKey])
     .filter((value): value is number => typeof value === "number");
   const { min, max } = computeRange(values);
 
+  const color = [
+    "interpolate",
+    ["linear"],
+    ["get", indicatorKey],
+    min,
+    "#cfd8ec",
+    max,
+    "#0b3d91"
+  ] as maplibregl.ExpressionSpecification;
+  const radius = [
+    "interpolate",
+    ["linear"],
+    ["get", indicatorKey],
+    min,
+    6,
+    max,
+    18
+  ] as maplibregl.ExpressionSpecification;
+
   return {
-    "circle-color": ["interpolate", ["linear"], ["get", indicatorKey], min, "#cfd8ec", max, "#0b3d91"],
-    "circle-radius": ["interpolate", ["linear"], ["get", indicatorKey], min, 6, max, 18],
+    "circle-color": color,
+    "circle-radius": radius,
     "circle-opacity": 0.82,
     "circle-stroke-width": 1,
     "circle-stroke-color": "#0b0f1a"
