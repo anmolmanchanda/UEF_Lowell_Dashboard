@@ -1,5 +1,6 @@
 import { IndicatorSeries } from "../types";
 import { fetchCensusIndicators } from "./sources-census";
+import { fetchBlsIndicators } from "./sources-bls";
 import { fetchMbtaReliability } from "./sources-mbta";
 import { fetchNoaaClimate } from "./sources-noaa";
 
@@ -23,6 +24,13 @@ export const SOURCE_REGISTRY: SourceHandler[] = [
     cadence: "annual",
     requiredEnv: ["CENSUS_API_KEY", "CENSUS_PLACE_CODE"],
     fetcher: fetchCensusIndicators
+  },
+  {
+    id: "bls",
+    label: "BLS Employment",
+    cadence: "monthly",
+    requiredEnv: [],
+    fetcher: fetchBlsIndicators
   },
   {
     id: "mbta",
