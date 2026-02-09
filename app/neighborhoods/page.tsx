@@ -1,9 +1,9 @@
 import NeighborhoodExplorer from "@/components/NeighborhoodExplorer";
 import { getIndicatorDefinitions, getNeighborhoods } from "@/lib/data";
 
-export default function NeighborhoodsPage() {
-  const indicators = getIndicatorDefinitions();
-  const neighborhoods = getNeighborhoods();
+export default async function NeighborhoodsPage() {
+  const indicators = await getIndicatorDefinitions();
+  const neighborhoods = await getNeighborhoods();
 
   return (
     <div>

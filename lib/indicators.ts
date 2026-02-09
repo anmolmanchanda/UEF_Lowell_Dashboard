@@ -3,6 +3,13 @@ import { IndicatorDefinition, IndicatorSeries, IndicatorValuePoint } from "./typ
 export type IndicatorStatus = "good" | "warn" | "alert";
 
 export function getLatestPoint(series: IndicatorValuePoint[]) {
+  if (!series.length) {
+    return {
+      latest: { date: "n/a", value: 0 },
+      previous: { date: "n/a", value: 0 },
+      delta: 0
+    };
+  }
   const latest = series[series.length - 1];
   const previous = series[series.length - 2] ?? latest;
   const delta = latest.value - previous.value;
@@ -70,7 +77,7 @@ export function buildPillarScores(
   });
 }
 
-function normalize(definition: IndicatorDefinition, value: number) {
+export function normalize(definition: IndicatorDefinition, value: number) {
   const { direction, good, warn, alert } = definition.thresholds;
   if (direction === "up") {
     if (value >= good) return 1;

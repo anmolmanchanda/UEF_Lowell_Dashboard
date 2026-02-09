@@ -54,3 +54,20 @@ export type Project = {
   metrics: string[];
   notes?: string;
 };
+
+export type InternalAggregate = {
+  summary: {
+    period: string;
+    "311_total": number;
+    median_resolution_days: number;
+    permit_cycle_median_days: number;
+    inspection_backlog: number;
+    service_level: string;
+  };
+  by_department: {
+    department: string;
+    open_requests: number;
+    median_resolution_days: number;
+  }[];
+  notes?: string;
+};

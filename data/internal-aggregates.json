@@ -1,0 +1,33 @@
+{
+  "summary": {
+    "period": "2025-Q4",
+    "311_total": 1307,
+    "median_resolution_days": 4.6,
+    "permit_cycle_median_days": 18,
+    "inspection_backlog": 92,
+    "service_level": "Stable with localized delays"
+  },
+  "by_department": [
+    {
+      "department": "Public Works",
+      "open_requests": 312,
+      "median_resolution_days": 4.8
+    },
+    {
+      "department": "Planning & Development",
+      "open_requests": 205,
+      "median_resolution_days": 5.4
+    },
+    {
+      "department": "Parks & Recreation",
+      "open_requests": 144,
+      "median_resolution_days": 3.6
+    },
+    {
+      "department": "Transportation",
+      "open_requests": 172,
+      "median_resolution_days": 4.1
+    }
+  ],
+  "notes": "Aggregated internal operational metrics only. No record-level or PII fields are included."
+}

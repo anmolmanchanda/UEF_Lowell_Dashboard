@@ -3,12 +3,12 @@ import KpiCard from "@/components/KpiCard";
 import { getIndicatorDefinitions, getIndicatorSeries, getRequestsSummary } from "@/lib/data";
 import { buildIndicatorSummary, buildPillarScores } from "@/lib/indicators";
 
-export default function HomePage() {
-  const definitions = getIndicatorDefinitions();
-  const series = getIndicatorSeries();
+export default async function HomePage() {
+  const definitions = await getIndicatorDefinitions();
+  const series = await getIndicatorSeries();
   const summaries = definitions.map((def) => buildIndicatorSummary(def, series[def.id] ?? []));
   const pillarScores = buildPillarScores(definitions, series);
-  const requestSummary = getRequestsSummary();
+  const requestSummary = await getRequestsSummary();
 
   const timeAxis = series[definitions[0].id]?.map((point) => point.date) ?? [];
 

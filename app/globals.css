@@ -205,6 +205,43 @@ main {
   background: #fff;
 }
 
+.lens-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.panel-inner {
+  padding: 18px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.stat-card {
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.stat-value {
+  font-family: var(--font-space), "Segoe UI", sans-serif;
+  font-size: 18px;
+  margin-top: 6px;
+}
+
 .chart-card h3 {
   margin: 0 0 10px;
   font-size: 16px;
@@ -252,6 +289,16 @@ main {
 .ask-panel button.secondary {
   background: #f0f2f6;
   color: var(--ink);
+}
+
+.ask-panel .mode-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.ask-panel .mode-toggle button {
+  width: auto;
+  flex: 1;
 }
 
 .ask-panel .response {
@@ -376,6 +423,9 @@ main {
     padding: 24px;
   }
   .content-grid {
+    grid-template-columns: 1fr;
+  }
+  .lens-grid {
     grid-template-columns: 1fr;
   }
 }

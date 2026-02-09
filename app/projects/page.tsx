@@ -1,8 +1,8 @@
 import ChartCard from "@/components/ChartCard";
 import { getProjects } from "@/lib/data";
 
-export default function ProjectsPage() {
-  const projects = getProjects();
+export default async function ProjectsPage() {
+  const projects = await getProjects();
   const statusCounts = projects.reduce<Record<string, number>>((acc, project) => {
     acc[project.status] = (acc[project.status] ?? 0) + 1;
     return acc;

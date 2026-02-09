@@ -118,5 +118,15 @@
     "refreshCadence": "Daily",
     "lastUpdated": "2025-12-31",
     "notes": "Transit reliability and service coverage metrics."
+  },
+  {
+    "id": "internal_aggregates",
+    "name": "Lowell Internal Aggregated Ops Metrics",
+    "source": "City of Lowell (internal)",
+    "url": "",
+    "license": "Internal use only",
+    "refreshCadence": "Monthly",
+    "lastUpdated": "2025-12-31",
+    "notes": "Aggregated operational metrics with no record-level data or PII."
   }
 ]
