@@ -43,6 +43,11 @@ const LAYERS = [
   { id: "response_time_311", label: "Service time" }
 ];
 
+const MAP_VIEWS = [
+  { id: "bubbles", label: "Bubbles" },
+  { id: "heatmap", label: "Heatmap" }
+];
+
 const FOCUS_LAYER_MAP: Record<string, string> = {
   housing: "housing_cost_burden",
   climate: "extreme_heat_days",
@@ -73,6 +78,7 @@ export default function HomeLens({
   const [focusId, setFocusId] = useState(FOCUS_CHIPS[0].id);
   const [expanded, setExpanded] = useState(false);
   const [mapLayerId, setMapLayerId] = useState(LAYERS[0].id);
+  const [mapView, setMapView] = useState<"bubbles" | "heatmap">("bubbles");
   const [lensVisible, setLensVisible] = useState(true);
 
   useEffect(() => {
@@ -106,7 +112,12 @@ export default function HomeLens({
   return (
     <div className="home-surface">
       <div className="map-hero">
-        <NeighborhoodMap neighborhoods={neighborhoods} className="full" indicatorKey={mapLayerId} />
+        <NeighborhoodMap
+          neighborhoods={neighborhoods}
+          className="full"
+          indicatorKey={mapLayerId}
+          viewMode={mapView}
+        />
         {lensVisible ? (
           <div className="map-overlay">
             <div className="map-overlay-header">
@@ -146,6 +157,20 @@ export default function HomeLens({
                     onClick={() => setMapLayerId(layer.id)}
                   >
                     {layer.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="stat-label">Map View</div>
+              <div className="chip-row" style={{ marginTop: 6 }}>
+                {MAP_VIEWS.map((view) => (
+                  <button
+                    key={view.id}
+                    className={`chip ${view.id === mapView ? "active" : ""}`}
+                    onClick={() => setMapView(view.id as "bubbles" | "heatmap")}
+                  >
+                    {view.label}
                   </button>
                 ))}
               </div>

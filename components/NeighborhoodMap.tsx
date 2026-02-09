@@ -10,9 +10,21 @@ const MAP_STYLE =
   "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
 const LAYER_ID = "neighborhood-circles";
+const GLOW_LAYER_ID = "neighborhood-glow";
+const HEAT_LAYER_ID = "neighborhood-heat";
+const LABEL_LAYER_ID = "neighborhood-labels";
 const SOURCE_ID = "neighborhoods";
+const MAX_LABELS = 5;
 
-function buildGeojson(neighborhoods: Neighborhood[]) {
+function buildGeojson(neighborhoods: Neighborhood[], indicatorKey: string) {
+  const ranked = neighborhoods
+    .map((hood) => ({ id: hood.id, value: hood.metrics[indicatorKey] }))
+    .filter((item): item is { id: string; value: number } => typeof item.value === "number")
+    .sort((a, b) => b.value - a.value);
+
+  const rankMap = new Map<string, number>();
+  ranked.forEach((item, index) => rankMap.set(item.id, index + 1));
+
   return {
     type: "FeatureCollection",
     features: neighborhoods.map((hood) => ({
@@ -24,6 +36,7 @@ function buildGeojson(neighborhoods: Neighborhood[]) {
       properties: {
         id: hood.id,
         name: hood.name,
+        rank: rankMap.get(hood.id) ?? 999,
         ...hood.metrics
       }
     }))
@@ -44,31 +57,100 @@ function buildPaint(indicatorKey: string, neighborhoods: Neighborhood[]) {
     .filter((value): value is number => typeof value === "number");
   const { min, max } = computeRange(values);
 
+  const valueExpr = ["coalesce", ["get", indicatorKey], min];
+
   return {
-    "circle-color": ["interpolate", ["linear"], ["get", indicatorKey], min, "#cfd8ec", max, "#0b3d91"],
-    "circle-radius": ["interpolate", ["linear"], ["get", indicatorKey], min, 6, max, 18],
+    "circle-color": ["interpolate", ["linear"], valueExpr, min, "#cfd8ec", max, "#0b3d91"],
+    "circle-radius": ["interpolate", ["linear"], valueExpr, min, 7, max, 22],
     "circle-opacity": 0.82,
     "circle-stroke-width": 1,
     "circle-stroke-color": "#0b0f1a"
   };
 }
 
+function buildGlowPaint(indicatorKey: string, neighborhoods: Neighborhood[]) {
+  const values = neighborhoods
+    .map((hood) => hood.metrics[indicatorKey])
+    .filter((value): value is number => typeof value === "number");
+  const { min, max } = computeRange(values);
+  const valueExpr = ["coalesce", ["get", indicatorKey], min];
+
+  return {
+    "circle-color": ["interpolate", ["linear"], valueExpr, min, "#6ea8ff", max, "#00c2c7"],
+    "circle-radius": ["interpolate", ["linear"], valueExpr, min, 14, max, 38],
+    "circle-opacity": 0.25
+  };
+}
+
+function buildHeatPaint(indicatorKey: string, neighborhoods: Neighborhood[]) {
+  const values = neighborhoods
+    .map((hood) => hood.metrics[indicatorKey])
+    .filter((value): value is number => typeof value === "number");
+  const { min, max } = computeRange(values);
+  const valueExpr = ["coalesce", ["get", indicatorKey], min];
+
+  return {
+    "heatmap-weight": ["interpolate", ["linear"], valueExpr, min, 0, max, 1],
+    "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 9, 0.6, 13, 1.1],
+    "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 9, 14, 13, 34],
+    "heatmap-opacity": 0.85,
+    "heatmap-color": [
+      "interpolate",
+      ["linear"],
+      ["heatmap-density"],
+      0,
+      "rgba(11, 61, 145, 0)",
+      0.2,
+      "rgba(11, 61, 145, 0.25)",
+      0.45,
+      "rgba(11, 61, 145, 0.55)",
+      0.7,
+      "rgba(0, 141, 143, 0.65)",
+      1,
+      "rgba(214, 69, 69, 0.75)"
+    ]
+  };
+}
+
+function applyVisibility(map: maplibregl.Map, viewMode: "bubbles" | "heatmap") {
+  const bubblesVisible = viewMode === "bubbles" ? "visible" : "none";
+  const heatVisible = viewMode === "heatmap" ? "visible" : "none";
+  [LAYER_ID, GLOW_LAYER_ID, LABEL_LAYER_ID].forEach((layerId) => {
+    if (map.getLayer(layerId)) {
+      map.setLayoutProperty(layerId, "visibility", bubblesVisible);
+    }
+  });
+  if (map.getLayer(HEAT_LAYER_ID)) {
+    map.setLayoutProperty(HEAT_LAYER_ID, "visibility", heatVisible);
+  }
+}
+
 export default function NeighborhoodMap({
   neighborhoods,
   className,
   height = 420,
-  indicatorKey = "median_rent"
+  indicatorKey = "median_rent",
+  viewMode = "bubbles"
 }: {
   neighborhoods: Neighborhood[];
   className?: string;
   height?: number | string;
   indicatorKey?: string;
+  viewMode?: "bubbles" | "heatmap";
 }) {
   const mapRef = useRef<maplibregl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const indicatorRef = useRef(indicatorKey);
   const [failed, setFailed] = useState(false);
 
-  const geojson = useMemo(() => buildGeojson(neighborhoods), [neighborhoods]);
+  useEffect(() => {
+    indicatorRef.current = indicatorKey;
+  }, [indicatorKey]);
+
+  const geojson = useMemo(
+    () => buildGeojson(neighborhoods, indicatorKey),
+    [neighborhoods, indicatorKey]
+  );
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
@@ -86,14 +168,45 @@ export default function NeighborhoodMap({
         if (!map) return;
         map.addSource(SOURCE_ID, { type: "geojson", data: geojson });
         map.addLayer({
+          id: HEAT_LAYER_ID,
+          type: "heatmap",
+          source: SOURCE_ID,
+          paint: buildHeatPaint(indicatorKey, neighborhoods) as any
+        } as any);
+        map.addLayer({
+          id: GLOW_LAYER_ID,
+          type: "circle",
+          source: SOURCE_ID,
+          paint: buildGlowPaint(indicatorKey, neighborhoods) as any
+        } as any);
+        map.addLayer({
           id: LAYER_ID,
           type: "circle",
           source: SOURCE_ID,
           paint: buildPaint(indicatorKey, neighborhoods) as any
         } as any);
+        map.addLayer({
+          id: LABEL_LAYER_ID,
+          type: "symbol",
+          source: SOURCE_ID,
+          filter: ["<=", ["get", "rank"], MAX_LABELS],
+          layout: {
+            "text-field": ["get", "name"],
+            "text-size": 12,
+            "text-offset": [0, 1.2],
+            "text-anchor": "top"
+          },
+          paint: {
+            "text-color": "#0b0f1a",
+            "text-halo-color": "rgba(255, 255, 255, 0.85)",
+            "text-halo-width": 1
+          }
+        } as any);
 
         map.setPaintProperty(LAYER_ID, "circle-color-transition", { duration: 650 });
         map.setPaintProperty(LAYER_ID, "circle-radius-transition", { duration: 650 });
+        map.setPaintProperty(GLOW_LAYER_ID, "circle-color-transition", { duration: 650 });
+        map.setPaintProperty(GLOW_LAYER_ID, "circle-radius-transition", { duration: 650 });
 
         map.on("mouseenter", LAYER_ID, () => {
           map?.getCanvas().style.setProperty("cursor", "pointer");
@@ -104,13 +217,16 @@ export default function NeighborhoodMap({
         map.on("click", LAYER_ID, (event) => {
           const feature = event.features?.[0];
           if (!feature) return;
+          const currentIndicator = indicatorRef.current;
           const name = feature.properties?.name ?? "Neighborhood";
-          const value = feature.properties?.[indicatorKey];
+          const value = feature.properties?.[currentIndicator];
           const popup = new maplibregl.Popup({ offset: 12 })
             .setLngLat(event.lngLat)
-            .setHTML(`<strong>${name}</strong><br/>${indicatorKey}: ${value ?? "n/a"}`);
+            .setHTML(`<strong>${name}</strong><br/>${currentIndicator}: ${value ?? "n/a"}`);
           popup.addTo(map!);
         });
+
+        applyVisibility(map, viewMode);
       });
 
       map.on("error", () => setFailed(true));
@@ -124,7 +240,7 @@ export default function NeighborhoodMap({
       map?.remove();
       mapRef.current = null;
     };
-  }, [geojson, indicatorKey, neighborhoods]);
+  }, [geojson, indicatorKey, neighborhoods, viewMode]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -138,7 +254,24 @@ export default function NeighborhoodMap({
       map.setPaintProperty(LAYER_ID, "circle-color", paint["circle-color"]);
       map.setPaintProperty(LAYER_ID, "circle-radius", paint["circle-radius"]);
     }
+    if (map.getLayer(GLOW_LAYER_ID)) {
+      const glow = buildGlowPaint(indicatorKey, neighborhoods) as any;
+      map.setPaintProperty(GLOW_LAYER_ID, "circle-color", glow["circle-color"]);
+      map.setPaintProperty(GLOW_LAYER_ID, "circle-radius", glow["circle-radius"]);
+    }
+    if (map.getLayer(HEAT_LAYER_ID)) {
+      const heat = buildHeatPaint(indicatorKey, neighborhoods) as any;
+      map.setPaintProperty(HEAT_LAYER_ID, "heatmap-weight", heat["heatmap-weight"]);
+      map.setPaintProperty(HEAT_LAYER_ID, "heatmap-color", heat["heatmap-color"]);
+      map.setPaintProperty(HEAT_LAYER_ID, "heatmap-radius", heat["heatmap-radius"]);
+    }
   }, [geojson, indicatorKey, neighborhoods]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    applyVisibility(map, viewMode);
+  }, [viewMode]);
 
   return (
     <div className={`map-shell ${className ?? ""}`} ref={mapContainerRef} style={{ height }}>
