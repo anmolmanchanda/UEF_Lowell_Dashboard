@@ -148,7 +148,11 @@ export default function NeighborhoodExplorer({
         <div className="panel panel-inner">
           <h3 className="section-title">Spatial Overview</h3>
           <p className="section-subtitle">Hotspots and neighborhood markers.</p>
-          <NeighborhoodMap neighborhoods={neighborhoods} />
+          <NeighborhoodMap
+            neighborhoods={neighborhoods}
+            indicatorKey={selectedIndicator?.id}
+            height={420}
+          />
         </div>
         <div className="panel panel-inner">
           <h3 className="section-title">Neighborhood Profile</h3>

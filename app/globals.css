@@ -428,6 +428,17 @@ main {
   gap: 6px;
 }
 
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .map-shell {
   height: 420px;
   border-radius: 16px;
@@ -437,7 +448,7 @@ main {
 }
 
 .map-shell.full {
-  min-height: 68vh;
+  min-height: 72vh;
 }
 
 .map-hero {
@@ -457,6 +468,7 @@ main {
   backdrop-filter: blur(12px);
   display: grid;
   gap: 12px;
+  animation: panel-in 0.6s ease;
 }
 
 .map-overlay-header {
@@ -536,6 +548,10 @@ main {
   background: #fff;
   display: grid;
   gap: 6px;
+}
+
+.home-surface {
+  margin: -32px -36px 0;
 }
 
 .table {
@@ -642,5 +658,14 @@ main {
   }
   .hero-grid {
     grid-template-columns: 1fr;
+  }
+  .home-surface {
+    margin: -24px -24px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-overlay {
+    animation: none;
   }
 }

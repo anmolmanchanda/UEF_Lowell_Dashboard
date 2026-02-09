@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IndicatorDefinition, Neighborhood } from "@/lib/types";
 import { formatValue } from "@/lib/format";
 import { getStatus } from "@/lib/indicators";
@@ -37,6 +37,18 @@ const FOCUS_CHIPS = [
   }
 ];
 
+const LAYERS = [
+  { id: "housing_cost_burden", label: "Rent burden" },
+  { id: "extreme_heat_days", label: "Heat risk" },
+  { id: "response_time_311", label: "Service time" }
+];
+
+const FOCUS_LAYER_MAP: Record<string, string> = {
+  housing: "housing_cost_burden",
+  climate: "extreme_heat_days",
+  mobility: "response_time_311"
+};
+
 type IndicatorSummary = {
   id: string;
   label: string;
@@ -60,6 +72,12 @@ export default function HomeLens({
 }) {
   const [focusId, setFocusId] = useState(FOCUS_CHIPS[0].id);
   const [expanded, setExpanded] = useState(false);
+  const [mapLayerId, setMapLayerId] = useState(LAYERS[0].id);
+
+  useEffect(() => {
+    const mapped = FOCUS_LAYER_MAP[focusId];
+    if (mapped) setMapLayerId(mapped);
+  }, [focusId]);
 
   const focus = FOCUS_CHIPS.find((chip) => chip.id === focusId) ?? FOCUS_CHIPS[0];
   const focusIndicators = useMemo(() => {
@@ -68,10 +86,10 @@ export default function HomeLens({
       .filter(Boolean) as IndicatorSummary[];
   }, [focus, summaries]);
 
-  const focusIndicatorDef = indicators.find((indicator) => indicator.id === focus.indicators[0]);
+  const mapIndicatorDef = indicators.find((indicator) => indicator.id === mapLayerId);
 
-  const hotspot = useMemo(() => {
-    const target = focus.indicators[0];
+  const hotspot = useMemo<{ name: string; value: number } | null>(() => {
+    const target = mapLayerId;
     if (!target) return null;
     let best: { name: string; value: number } | null = null;
     neighborhoods.forEach((hood) => {
@@ -82,75 +100,92 @@ export default function HomeLens({
       }
     });
     return best;
-  }, [focus, neighborhoods]);
+  }, [mapLayerId, neighborhoods]);
 
   return (
-    <div className="map-hero">
-      <NeighborhoodMap neighborhoods={neighborhoods} className="full" />
-      <div className="map-overlay">
-        <div className="map-overlay-header">
-          <div>
-            <div className="stat-label">Neighborhood Lens</div>
-            <div className="overlay-title">{focus.label} Focus</div>
-          </div>
-          <button className="secondary" onClick={() => setExpanded((prev) => !prev)}>
-            {expanded ? "Hide details" : "Explore deeper"}
-          </button>
-        </div>
-        <div className="chip-row">
-          {FOCUS_CHIPS.map((chip) => (
-            <button
-              key={chip.id}
-              className={`chip ${chip.id === focusId ? "active" : ""}`}
-              onClick={() => setFocusId(chip.id)}
-            >
-              {chip.label}
+    <div className="home-surface">
+      <div className="map-hero">
+        <NeighborhoodMap neighborhoods={neighborhoods} className="full" indicatorKey={mapLayerId} />
+        <div className="map-overlay">
+          <div className="map-overlay-header">
+            <div>
+              <div className="stat-label">Neighborhood Lens</div>
+              <div className="overlay-title">{focus.label} Focus</div>
+            </div>
+            <button className="secondary" onClick={() => setExpanded((prev) => !prev)}>
+              {expanded ? "Hide details" : "Explore deeper"}
             </button>
-          ))}
-        </div>
-        <div className="overlay-copy">{focus.description}</div>
+          </div>
+          <div className="chip-row">
+            {FOCUS_CHIPS.map((chip) => (
+              <button
+                key={chip.id}
+                className={`chip ${chip.id === focusId ? "active" : ""}`}
+                onClick={() => setFocusId(chip.id)}
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
+          <div className="overlay-copy">{focus.description}</div>
 
-        <div className="overlay-metrics">
-          {focusIndicators.slice(0, 2).map((item) => (
-            <div key={item.id} className="overlay-metric">
-              <div className="stat-label">{item.label}</div>
-              <div className="stat-value">{formatValue(item.latest, item.format)}</div>
-              <div className="insight-sub">{item.trend}</div>
-            </div>
-          ))}
-        </div>
-
-        {hotspot && focusIndicatorDef ? (
-          <div className="overlay-highlight">
-            <div className="stat-label">Highest signal right now</div>
-            <div className="overlay-title">{hotspot.name}</div>
-            <div className="insight-sub">
-              {focusIndicatorDef.label}: {formatValue(hotspot.value, focusIndicatorDef.format)}
+          <div>
+            <div className="stat-label">Map Layer</div>
+            <div className="chip-row" style={{ marginTop: 6 }}>
+              {LAYERS.map((layer) => (
+                <button
+                  key={layer.id}
+                  className={`chip ${layer.id === mapLayerId ? "active" : ""}`}
+                  onClick={() => setMapLayerId(layer.id)}
+                >
+                  {layer.label}
+                </button>
+              ))}
             </div>
           </div>
-        ) : null}
 
-        <div className="overlay-ai">
-          <div className="stat-label">Ask Lowell</div>
-          <div className="insight-sub">Suggested question</div>
-          <div className="overlay-title">{focus.prompt}</div>
-        </div>
-
-        {expanded ? (
-          <div className="overlay-detail">
-            {focusIndicators.map((item) => {
-              const def = indicators.find((indicator) => indicator.id === item.id);
-              const status = def ? getStatus(def, item.latest) : "warn";
-              return (
-                <div key={item.id} className="overlay-detail-card">
-                  <div className="stat-label">{item.label}</div>
-                  <div className="stat-value">{formatValue(item.latest, item.format)}</div>
-                  <span className={`badge ${status}`}>{item.trend}</span>
-                </div>
-              );
-            })}
+          <div className="overlay-metrics">
+            {focusIndicators.slice(0, 2).map((item) => (
+              <div key={item.id} className="overlay-metric">
+                <div className="stat-label">{item.label}</div>
+                <div className="stat-value">{formatValue(item.latest, item.format)}</div>
+                <div className="insight-sub">{item.trend}</div>
+              </div>
+            ))}
           </div>
-        ) : null}
+
+          {hotspot && mapIndicatorDef ? (
+            <div className="overlay-highlight">
+              <div className="stat-label">Highest signal right now</div>
+              <div className="overlay-title">{hotspot.name}</div>
+              <div className="insight-sub">
+                {mapIndicatorDef.label}: {formatValue(hotspot.value, mapIndicatorDef.format)}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="overlay-ai">
+            <div className="stat-label">Ask Lowell</div>
+            <div className="insight-sub">Suggested question</div>
+            <div className="overlay-title">{focus.prompt}</div>
+          </div>
+
+          {expanded ? (
+            <div className="overlay-detail">
+              {focusIndicators.map((item) => {
+                const def = indicators.find((indicator) => indicator.id === item.id);
+                const status = def ? getStatus(def, item.latest) : "warn";
+                return (
+                  <div key={item.id} className="overlay-detail-card">
+                    <div className="stat-label">{item.label}</div>
+                    <div className="stat-value">{formatValue(item.latest, item.format)}</div>
+                    <span className={`badge ${status}`}>{item.trend}</span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   );

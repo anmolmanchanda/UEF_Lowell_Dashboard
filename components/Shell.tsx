@@ -6,7 +6,7 @@ import AskLowellPanel from "./AskLowellPanel";
 import InternalGate from "./InternalGate";
 
 const navItems = [
-  { href: "/", label: "Citywide Overview", hint: "Core KPIs" },
+  { href: "/", label: "Home Lens", hint: "Map-first" },
   { href: "/neighborhoods", label: "Neighborhood Explorer", hint: "Spatial insight" },
   { href: "/projects", label: "Project Tracker", hint: "Lifecycle view" }
 ];
