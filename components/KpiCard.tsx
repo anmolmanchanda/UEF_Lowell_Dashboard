@@ -1,4 +1,4 @@
-\"use client\";
+"use client";
 
 import { formatDelta, formatValue } from "@/lib/format";
 
